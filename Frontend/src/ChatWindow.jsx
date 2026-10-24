@@ -8,12 +8,12 @@ import { PropagateLoader } from "react-spinners";
 function ChatWindow(){
     const {prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat} = useContext(MyContext);
     const [loading, setLoading] = useState(false);
-    // const [isOpen, setIsOpen] = useState(false);
-    // const [displayAbout, setDisplayAbout] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [displayAbout, setDisplayAbout] = useState(false);
 
     const getReply = async ()=>{
         setLoading(true);
-        // setNewChat(false); //so that "Start New Chat doesn't display"
+        
         const options = {
         method: "POST",
         headers: {
@@ -28,6 +28,7 @@ function ChatWindow(){
             const response = await fetch("http://localhost:8080/api/chat", options);
             const res = await response.json();
             setReply(res.assistantReply);
+            setNewChat(false); //so that "Start New Chat doesn't display"
             console.log(res.assistantReply);
         }
         catch(err){
@@ -57,17 +58,25 @@ function ChatWindow(){
 
     }, [reply])
 
+    let handleIsOpen = () => {
+        setIsOpen(!isOpen) ; //toggle
+    }
+
+    let handleDisplay = () => {
+        setDisplayAbout(!displayAbout); // toggle
+    }
+
     return(
          <div className="ChatWindow">
         
            <div className="navbar">
-            <span className="aboutS">AskAI <i className="fa-solid fa-chevron-down"></i></span>
+            <span className="aboutS">ConvoAI <i className="fa-solid fa-chevron-down" onMouseEnter={handleDisplay} onMouseLeave={handleDisplay}></i></span>
             <div className="userIconDiv">
-                <span className="userIcon"><i className="fa-solid fa-user"></i></span>
+                <span className="userIcon"><i className="fa-solid fa-user" onClick={handleIsOpen}></i></span>
             </div>
            </div>
-           {/* {
-                displayAbout && <div className="about"><p>Your AI, your ideas.<br></br>An AI assistant built to help you think, learn, and create.</p></div>
+            {
+                displayAbout && <div className="about"><p>Your AI, your ideas. An AI assistant built to help you think, learn, and create.</p></div>
             }
            {
             isOpen && <div className="dropDown">
@@ -75,7 +84,7 @@ function ChatWindow(){
                 <div className="dropDownItem"><i class="fa-solid fa-cloud-arrow-up"></i> &nbsp; Upgrade Plan</div>
                 <div className="dropDownItem"><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Log out</div>
             </div>
-           } */}
+           }
 
            <Chat></Chat>
            <PropagateLoader color="#36d7b7" loading = {loading}/>
@@ -87,7 +96,7 @@ function ChatWindow(){
                 onKeyDown={(event)=> event.key === 'Enter'?getReply(): ''}></input>
             <div id="submit" onClick={getReply}><i className="fa-solid fa-circle-arrow-up"></i></div>
             </div>
-            <p className="info">AskAI can make mistakes. Check important info. See Cookie Preferences.</p>
+            <p className="info">ConvoAI can make mistakes. Check important info. See Cookie Preferences.</p>
            </div>
         </div>
     );
